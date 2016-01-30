@@ -198,6 +198,22 @@ function displayData(data, timeperiod) {
 	}
 }
 
+
+function loadFromText(text) {
+	var parsedCSV = Papa.parse(text, {
+			skipEmptyLines: true
+	});
+	var csvData = parsedCSV.data;
+
+	data = dataTransform(csvData);
+
+	$("#load-file-section").hide();
+	$("#after-load").show();
+	$("#stats").show();
+
+	displayData(data, $("#input-time-period").val());
+}
+
 $(document).ready(function() {
 	$("#load-file").click(function() {
 		var filesList = $("#file-uploader").prop("files");
@@ -206,25 +222,21 @@ $(document).ready(function() {
 			var fileReader = new FileReader();
 
 			fileReader.onload = function() {
-				var csvFile = fileReader.result;
-				var parsedCSV = Papa.parse(csvFile, {
-						skipEmptyLines: true
-				});
-				var csvData = parsedCSV.data;
-
-				data = dataTransform(csvData);
-
-				$("#load-file-section").hide();
-				$("#after-load").show();
-				$("#stats").show();
-
-				displayData(data, $("#input-time-period").val());
+				loadFromText(fileReader.result);
 			};
 
 			fileReader.readAsText(file);
 		} else {
 			alert("You need to select a file.");
 		}
+	});
+
+	$("#use-demo-data").click(function() {
+		$.ajax("demo.csv").done(function(text) {
+			loadFromText(text);
+		}).fail(function() {
+			alert("Could not load demo data.");
+		});
 	});
 
 	$("#input-time-period").change(function() {

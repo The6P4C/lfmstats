@@ -1,3 +1,14 @@
 .file-input {
 	margin-bottom: 10px;
 }
+
+#stats {
+	display: none;
+}
+
+.chartWrap {
+	width: 800px;
+	height: 600px;
+
+	margin: 0px auto;
+}

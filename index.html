@@ -18,7 +18,7 @@
 				<p class='lead'>More statistics about your listening habits.</p>
 			</div>
 
-			<div>
+			<div id='load-file-section'>
 				<h3>Load File</h3>
 				<p>
 					You'll need to generate a CSV file from your LastFM data. I recommend <a href='http://benjaminbenben.com/lastfm-to-csv/'><i>Last.fm to csv</i></a>. When that's done, come back here and upload that file.</p>
@@ -28,10 +28,23 @@
 
 				<button id='load-file' class='btn btn-primary' type='button'>Show me the stats!</button>
 			</div>
+
+			<div id='stats'>
+				<h3>Listening by Day</h3>
+				<div class='chartWrap'>
+					<canvas id='chart-byDay' class='chart' width='800' height='600'></canvas>
+				</div>
+
+				<h3>Listening by Hour</h3>
+				<div class='chartWrap'>
+					<canvas id='chart-byHour' class='chart' width='800' height='600'></canvas>
+				</div>
+			</div>
 		</div>
 
 		<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js'></script>
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js'></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
 		<script src='index.js'></script>
 	</body>
 </html>

@@ -53,6 +53,63 @@ var GENERATORS = [
 		},
 		id: "chart-hour",
 		type: "bar"
+	},
+
+	{
+		genData: function(data) {
+			var playsPerArtist = {};
+
+			for (var i = 0; i < data.length; ++i) {
+				var row = data[i];
+
+				if (playsPerArtist.hasOwnProperty(row.artist)) {
+					++playsPerArtist[row.artist];
+				} else {
+					playsPerArtist[row.artist] = 1;
+				}
+			}
+
+			var playsPerArtistTuple = [];
+
+			for (var key in playsPerArtist) {
+				if (playsPerArtist.hasOwnProperty(key)) {
+					playsPerArtistTuple.push([key, playsPerArtist[key]]);
+				}
+			}
+
+			// Less than and greater than return 1 and -1 respectively
+			// because we want the list sorted in descending (they would
+			// normally return -1 and 1 respectively)
+			playsPerArtistTuple.sort(function(a, b) {
+				if (a[1] < b[1]) {
+					return 1;
+				} else if (a[1] > b[1]) {
+					return -1;
+				} else {
+					return 0;
+				}
+			});
+
+			var chartData = [];
+			var labels = [];
+
+			for (var i = 0; i < Math.min(playsPerArtistTuple.length, 11); ++i) {
+				var tuple = playsPerArtistTuple[i];
+				chartData.push(tuple[1]);
+				labels.push(tuple[0]);
+			}
+
+			return {
+				datasets: [
+					{
+						data: chartData
+					}
+				],
+				labels: labels
+			};
+		},
+		id: "chart-artists",
+		type: "bar"
 	}
 ];
 

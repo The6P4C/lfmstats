@@ -1,51 +1,58 @@
-var statistics = [
-	// Listening by day
-	function(data) {
-		var chartData = [0, 0, 0, 0, 0, 0, 0];
-		for (var i = 0; i < data.length; ++i) {
-			var row = data[i];
+var GENERATORS = [
+	{
+		genData: function(data) {
+			var chartData = [0, 0, 0, 0, 0, 0, 0];
+			for (var i = 0; i < data.length; ++i) {
+				var row = data[i];
 
-			++chartData[row.timestamp.getDay()];
-		}
+				++chartData[row.timestamp.getDay()];
+			}
 
-		chartData.push(chartData.shift());
+			// The JS date object thinks Sunday = 0
+			// This puts Sunday at the end to get a more natural Mon-Sun order
+			chartData.push(chartData.shift());
 
-		var ctx = $("#chart-byDay").get(0).getContext("2d");
-		var chart = new Chart(ctx).Bar({
-			labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-			datasets: [
-				{
-					data: chartData
-				}
-			]
-		});
+			return {
+				datasets: [
+					{
+						data: chartData
+					}
+				],
+				labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+			};
+		},
+		id: "chart-day",
+		type: "bar"
 	},
 
-	function(data) {
-		var chartData = [];
-		var labels = [];
+	{
+		genData: function(data) {
+			var chartData = [];
+			var labels = [];
 
-		for (var i = 0; i < 24; ++i) {
-			chartData.push(0);
-			var paddedHr = i < 10 ? "0" + i : i;
-			labels.push(paddedHr + ":00");
-		}
+			for (var i = 0; i < 24; ++i) {
+				chartData.push(0);
+				var paddedHr = i < 10 ? "0" + i : i;
+				labels.push(paddedHr + ":00");
+			}
 
-		for (var i = 0; i < data.length; ++i) {
-			var row = data[i];
+			for (var i = 0; i < data.length; ++i) {
+				var row = data[i];
 
-			++chartData[row.timestamp.getHours()];
-		}
+				++chartData[row.timestamp.getHours()];
+			}
 
-		var ctx = $("#chart-byHour").get(0).getContext("2d");
-		var chart = new Chart(ctx).Bar({
-			labels: labels,
-			datasets: [
-				{
-					data: chartData
-				}
-			]
-		});
+			return {
+				datasets: [
+					{
+						data: chartData
+					}
+				],
+				labels: labels
+			};
+		},
+		id: "chart-hour",
+		type: "bar"
 	}
 ];
 
@@ -76,6 +83,25 @@ function dataTransform(csvData) {
 	return data;
 }
 
+function displayData(data) {
+	for (var i = 0; i < GENERATORS.length; ++i) {
+		var generator = GENERATORS[i];
+		var chartValues = generator.genData(data);
+
+		var ctx = $("#" + generator.id).get(0).getContext("2d");
+		var chartIntermediate = new Chart(ctx);
+
+		switch (generator.type) {
+			case "bar":
+				chart = chartIntermediate.Bar({
+					labels: chartValues.labels,
+					datasets: chartValues.datasets
+				})
+				break;
+		}
+	}
+}
+
 $(document).ready(function() {
 	$("#load-file").click(function() {
 		var filesList = $("#file-uploader").prop("files");
@@ -93,14 +119,15 @@ $(document).ready(function() {
 				var data = dataTransform(csvData);
 
 				$("#load-file-section").hide();
+				$("#new-file-advice").show();
 				$("#stats").show();
 
-				for (var i = 0; i < statistics.length; ++i) {
-					statistics[i](data);
-				}
+				displayData(data);
 			};
 
 			fileReader.readAsText(file);
+		} else {
+			alert("You need to select a file.");
 		}
 	});
 });

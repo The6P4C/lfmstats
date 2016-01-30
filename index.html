@@ -21,7 +21,10 @@
 			<div id='load-file-section'>
 				<h3>Load File</h3>
 				<p>
-					You'll need to generate a CSV file from your LastFM data. I recommend <a href='http://benjaminbenben.com/lastfm-to-csv/'><i>Last.fm to csv</i></a>. When that's done, come back here and upload that file.</p>
+					You'll need to generate a CSV file from your LastFM data. I recommend using <a href='http://benjaminbenben.com/lastfm-to-csv/'><i>Last.fm to csv</i></a>. Any other generator may not be compatible with this.
+				</p>
+				<p>
+					When that's done, come back here and upload that file.
 				</p>
 
 				<input id='file-uploader' class='file-input' type='file'>
@@ -29,15 +32,21 @@
 				<button id='load-file' class='btn btn-primary' type='button'>Show me the stats!</button>
 			</div>
 
+			<div id='new-file-advice'>
+				<p>
+					Refresh the page to load another file.
+				</p>
+			</div>
+
 			<div id='stats'>
-				<h3>Listening by Day</h3>
+				<h3>By Day</h3>
 				<div class='chartWrap'>
-					<canvas id='chart-byDay' class='chart' width='800' height='600'></canvas>
+					<canvas id='chart-day' width='800' height='600'></canvas>
 				</div>
 
-				<h3>Listening by Hour</h3>
+				<h3>By Hour</h3>
 				<div class='chartWrap'>
-					<canvas id='chart-byHour' class='chart' width='800' height='600'></canvas>
+					<canvas id='chart-hour' width='800' height='600'></canvas>
 				</div>
 			</div>
 		</div>

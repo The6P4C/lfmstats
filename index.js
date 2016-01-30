@@ -1,5 +1,5 @@
 function parseStringTimestamp(timestampString) {
-	return new Date(timestampString + "GMT+0000");
+	return new Date(timestampString + " GMT+0000");
 }
 
 function dataTransform(csvData) {

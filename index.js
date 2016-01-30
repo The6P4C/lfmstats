@@ -1,3 +1,6 @@
+var data;
+var currentCharts = [];
+
 var GENERATORS = [
 	{
 		genData: function(data) {
@@ -140,13 +143,47 @@ function dataTransform(csvData) {
 	return data;
 }
 
-function displayData(data) {
+function dateBetween(date, low, high) {
+	var dateTime = date.getTime();
+	if (!(dateTime < low.getTime()) && !(dateTime > high.getTime())) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function displayData(data, timeperiod) {
+	if (timeperiod != "all") {
+		var newData = [];
+		var now = new Date(Date.now());
+		var lowLimitDate = new Date(Date.now());
+		lowLimitDate.setDate(lowLimitDate.getDate() - Number(timeperiod));
+		console.log(lowLimitDate);
+
+		for (var i = 0; i < data.length; ++i) {
+			var row = data[i];
+
+			if (dateBetween(row.timestamp, lowLimitDate, now)) {
+				newData.push(row);
+			}
+		}
+
+		data = newData;
+	}
+
+	for (var i = 0; i < currentCharts.length; ++i) {
+		currentCharts[i].destroy();
+	}
+
+	currentCharts = [];
+
 	for (var i = 0; i < GENERATORS.length; ++i) {
 		var generator = GENERATORS[i];
 		var chartValues = generator.genData(data);
 
 		var ctx = $("#" + generator.id).get(0).getContext("2d");
 		var chartIntermediate = new Chart(ctx);
+		var chart;
 
 		switch (generator.type) {
 			case "bar":
@@ -156,6 +193,8 @@ function displayData(data) {
 				})
 				break;
 		}
+
+		currentCharts.push(chart);
 	}
 }
 
@@ -173,18 +212,22 @@ $(document).ready(function() {
 				});
 				var csvData = parsedCSV.data;
 
-				var data = dataTransform(csvData);
+				data = dataTransform(csvData);
 
 				$("#load-file-section").hide();
-				$("#new-file-advice").show();
+				$("#after-load").show();
 				$("#stats").show();
 
-				displayData(data);
+				displayData(data, $("#input-time-period").val());
 			};
 
 			fileReader.readAsText(file);
 		} else {
 			alert("You need to select a file.");
 		}
+	});
+
+	$("#input-time-period").change(function() {
+		displayData(data, $("#input-time-period").val());
 	});
 });
